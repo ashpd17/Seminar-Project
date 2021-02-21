@@ -2,13 +2,13 @@
 dp = 3.5e-3; %Particle diameter dp (m)
 rhol = 1029; %Liquid density ?l (kg/m3)
 sigma = 7.31e-2; %Liquid surface tension ? (N/m)
-mu = 1.01e-3; %Liquid viscosity ? (Pa·s)
+mu = 1.01e-3; %Liquid viscosity ? (PaÂ·s)
 Diff = 9.25e-10;%Molecular diffusivity D (m2/s)
-thetacon = 70*pi/180; %Liquid-solid contact angle con (°)
+thetacon = 70*pi/180; %Liquid-solid contact angle con (Â°)
 %------------------------Operating parameters----------------------------
 omega = 59; %Rotational speed ? (rad/s) rad/s 
-L = 1.49; %Liquid superficial mass velocity L (kg/(m2·s))
-G = 0.03; %Gas superficial mass velocity G (kg/(m2·s))
+L = 1.49; %Liquid superficial mass velocity L (kg/(m2Â·s))
+G = 0.03; %Gas superficial mass velocity G (kg/(m2Â·s))
 %------------------------Geometrical parameters--------------------------
 R = dp/2; %radius of the catalyst particle, m
 Ri = (37/2)*10^-3; %inner radius of the rotor, m
@@ -26,7 +26,7 @@ for i=1:N
   Nc = 3.42/epb - 1.18;
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
   betab = solver1(Vpr,R,thetacon); %made 1 change
-  theta = 20; %assumed take radian
+  theta = betab; %initial value for ode loop
   Q = 10; %calculate Q assumed 
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(theta))^2));
   alpha = acos(R/((R+hj)*sin(theta)));
