@@ -1,3 +1,5 @@
+clc;
+clear;
 %---------------------------Physical Parameters--------------------------
 dp = 3.5e-3; %Particle diameter dp (m)
 rhol = 1029; %Liquid density ?l (kg/m3)
@@ -5,6 +7,7 @@ sigma = 7.31e-2; %Liquid surface tension ? (N/m)
 mu = 1.01e-3; %Liquid viscosity ? (Pa·s)
 Diff = 9.25e-10;%Molecular diffusivity D (m2/s)
 thetacon = 70*pi/180; %Liquid-solid contact angle con (°)
+g = 9.8; %acceleration due to gravity m/s2
 %------------------------Operating parameters----------------------------
 omega = 59; %Rotational speed ? (rad/s) rad/s 
 L = 1.49; %Liquid superficial mass velocity L (kg/(m2·s))
@@ -26,7 +29,7 @@ for i=1:N
   Nc = 3.42/epb - 1.18;
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
   specificsolver1 = @(x) solver1(Vpr,R,thetacon,x);
-  betab = fzero(specificsolver1,[pi/360,pi/2]) %made 1 change
+  betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
   theta = betab; %initial value for ode loop
   Q = 10; %calculate Q assumed 
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(theta))^2));
@@ -44,8 +47,18 @@ for i=1:N
   Ub = (8/5)*Uavg;
   delta = 4.64*(mu*Xbetab/(rhol*Ub))^(1/2);
   deltad = delta/(Sc^(1/3));
-  %solve ode in theta deltad eqn C1,C2...
+  %solve ode in theta deltad eqn C1,C2... M = 10;
+  M = 50;
+  dtheta = (pi-2*betab)/(M-1);
+  thetamat = betab:dtheta:pi - betab
   %solve trapz using eqn 24 
+%  Di = 2*Rri;
+%  Re = (L*dp)/mu;
+%  Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
+%  Ka = (mu^4)*g/((sigma^3)*rhol);
+%  f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
+%  term = (0.75*f*Diff*dtheta)*sin(thetamat)./deltad;
+%  klsi = trapz(term,thetamat)
   klsi(i) = 10; %assumed 
 end
 Vsum = 0;
@@ -57,5 +70,3 @@ for i=1:N
   kls = kls + klsi(i)*V(i);
 end
 kls = kls/Vsum
-
-
