@@ -32,6 +32,7 @@ for i=1:N
   betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
   theta = betab; %initial value for ode loop
   Q = 10; %calculate Q assumed 
+  %will have to remove hj, alpha, Sl and Uavg from here and put into solver 2 since these are theta dependent and will vary in loop
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(theta))^2));
   alpha = acos(R/((R+hj)*sin(theta)));
   if ((R+hj)*sin(theta) >= R)
