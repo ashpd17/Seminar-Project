@@ -11,7 +11,7 @@ if ((R+h)*sin(theta) >= R)
 else
   Sl = pi*(2*R*h+h^2);
 end
-  Uavg = 4*(R^2)*L/(rhol*Sl*sin(theta));
+Uavg = 4*(R^2)*L/(rhol*Sl*sin(theta));
 if (R+h)*sin(theta) >= R
   f2a = 2*pi - 8*alpha*(sin(theta)^2)*(R+h)*sin(theta);
   f2b = 4*R*cos(theta)*sqrt(((R+h)*sin(theta))^2 - R^2) - 12*alpha*(((R+h)*sin(theta))^2)*cos(theta) + pi*(2*R*h+h*h)*cos(theta);
