@@ -20,7 +20,7 @@ else
   f2b = pi*(2Rh+(h*h))*cos(theta);
 end
 f3 = (12*Uavg*deltad)/(25*h) - (12*Uavg*(deltad^3))/(175*(h^3));
-f4 = ((((3*(deltad^4))/(175*(h^3)) - (6*(deltad^2))/(25*h))*f1*f2a + (6*Uavg*(deltad^2))/(25*h*h) - (9*Uavg*(deltad^4))/(175*(h^4)))*((-2/3)*(((3*mu*Q)/(2*pi*R*rho*omega*omega*Rri))^0.333)*((sin(theta))^(-1.667))*cos(theta))) + ((3*(deltad^4))/(175*h*h*h) - (6*(deltad^4))/(25*h))*f1*f2b + (3*Uavg*(deltad^4))/(175*h*h*h*tan(theta)) - (9*Uavg*deltad*deltad)/(25*h*tan(theta)) + (3*R*D)/(2*deltad);
+f4 = ((((3*(deltad^4))/(175*(h^3)) - (6*(deltad^2))/(25*h))*f1*f2a + (6*Uavg*(deltad^2))/(25*h*h) - (9*Uavg*(deltad^4))/(175*(h^4)))*((-2/3)*(((3*mu*Q)/(2*pi*R*rho*omega*omega*Rri))^0.333)*((sin(theta))^(-1.667))*cos(theta))) + ((3*(deltad^4))/(175*h*h*h) - (6*(deltad^4))/(25*h))*f1*f2b + (3*Uavg*(deltad^4))/(175*h*h*h*tan(theta)) - (9*Uavg*deltad*deltad)/(25*h*tan(theta)) + (3*R*Diff)/(2*deltad);
 dydx = @(x,y) f4/f3;
 
 
