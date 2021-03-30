@@ -1,5 +1,6 @@
 clc;
 clear;
+global mu R rhol Rri L Diff Q omega;
 %---------------------------Physical Parameters--------------------------
 dp = 3.5e-3; %Particle diameter dp (m)
 rhol = 1029; %Liquid density ?l (kg/m3)
@@ -19,7 +20,7 @@ Ro = (79/2)*10^-3; %outer radius of the rotor, m
 H = 18*10^-3; %axial height, m
 %------------------------Model-------------------------------------------
 i = 1;
-N = 10; %assumed 
+N = 1; %assumed 
 for i=1:N
   Rri = Ri + (2*i-1)*R;
   V(i) = pi*((Rri + R)^2 - (Rri-R)^2)*H;
@@ -30,36 +31,28 @@ for i=1:N
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
   specificsolver1 = @(x) solver1(Vpr,R,thetacon,x);
   betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
-  theta = betab; %initial value for ode loop
-  Q = 10; %calculate Q assumed 
-  %will have to remove hj, alpha, Sl and Uavg from here and put into solver 2 since these are theta dependent and will vary in loop
-  hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(theta))^2));
-  alpha = acos(R/((R+hj)*sin(theta)));
-  if ((R+hj)*sin(theta) >= R)
+  Xbetab = 0.00001; %assumed the length of the arc corresponding to betab 
+  hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(betab))^2));
+  alpha = acos(R/((R+hj)*sin(betab)));
+  if ((R+hj)*sin(betab) >= R)
     Sl = (4*tan(alpha)-pi)*R^2 + (pi - 4*alpha*(sin(theta))^2)*(R+hj)^2;
   else
      Sl = pi*(2*R*hj+hj^2);
   end
-  Uavg = 4*(R^2)*L/(rhol*Sl*sin(theta));
-  %Y assumed ranges from 0 to h
-  %U = -(4*Uavg/(5*h^3))*Y^3 + ((12*Uavg)/(5*h))*Y; Not required ig
-  Sc = mu/(rhol*Diff);
-  Xbetab = 0.00001; %assumed the length of the arc corresponding to betab 
+  Uavg = 4*(R^2)*L/(rhol*Sl*sin(betab));
   Ub = (8/5)*Uavg;
+  Q = 10; %calculate Q assumed 
+  thetaspan = [betab pi-betab];
   delta = 4.64*(mu*Xbetab/(rhol*Ub))^(1/2);
-  deltad = delta/(Sc^(1/3));
-  %solve ode in theta deltad eqn C1,C2... M = 10;
-  M = 50;
-  dtheta = (pi-2*betab)/(M-1);
-  thetamat = betab:dtheta:pi - betab
-  %solve trapz using eqn 24 
-%  Di = 2*Rri;
-%  Re = (L*dp)/mu;
-%  Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
-%  Ka = (mu^4)*g/((sigma^3)*rhol);
-%  f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
-%  term = (0.75*f*Diff*dtheta)*sin(thetamat)./deltad;
-%  klsi = trapz(term,thetamat)
+  [theta, deltad] = ode45(@solver2, thetaspan, delta)
+  %solve trapz using eqn 24
+  Di = 2*Rri;
+  Re = (L*dp)/mu;
+  Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
+  Ka = (mu^4)*g/((sigma^3)*rhol);
+  f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
+  term = (0.75*f*Diff)*sin(theta)./deltad;
+  klsi = trapz(term,theta)
   klsi(i) = 10; %assumed 
 end
 Vsum = 0;
