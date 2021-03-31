@@ -1,6 +1,6 @@
 clc;
 clear;
-global mu R rhol Rri L Diff Q omega betab;
+global mu R rhol Rri L Diff Q omega;
 %---------------------------Physical Parameters--------------------------
 dp = 3.5e-3; %Particle diameter dp (m)
 rhol = 1029; %Liquid density ?l (kg/m3)
@@ -10,7 +10,7 @@ Diff = 9.25e-10;%Molecular diffusivity D (m2/s)
 thetacon = 70*pi/180; %Liquid-solid contact angle con (°)
 g = 9.8; %acceleration due to gravity m/s2
 %------------------------Operating parameters----------------------------
-omega = 59; %Rotational speed ? (rad/s) rad/s 
+omega = 176; %Rotational speed ? (rad/s) rad/s 
 L = 1.49; %Liquid superficial mass velocity L (kg/(m2·s))
 G = 0.03; %Gas superficial mass velocity G (kg/(m2·s))
 %------------------------Geometrical parameters--------------------------
@@ -45,7 +45,9 @@ for i=1:N
  
   thetaspan = [betab pi-betab];
   delta = 4.64*(mu*Xbetab/(rhol*Ub))^(1/2);
-  [theta, deltad] = ode45(@solver2, thetaspan, delta);
+  Sc = mu/(rhol*Diff);
+  deltad = delta/Sc^(1/3);
+  [theta, deltad] = ode45(@solver2, thetaspan, deltad);
   %solve trapz using eqn 24
   Di = 2*Rri;
   Re = (L*dp)/mu;
