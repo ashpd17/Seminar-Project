@@ -1,6 +1,6 @@
 clc;
 clear;
-global mu R rhol Rri L Diff Q omega;
+global mu R rhol Rri L Diff Q omega betab;
 %---------------------------Physical Parameters--------------------------
 dp = 3.5e-3; %Particle diameter dp (m)
 rhol = 1029; %Liquid density ?l (kg/m3)
@@ -29,12 +29,12 @@ for i=1:N
   esext = 1/(20 + 0.9*Eo);
   Nc = 3.42/epb - 1.18;
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
-  Q = L*(2*pi*R*H)/rhol; %calculate Q assumed 
+  Q = L*(2*pi*Ri*H)/rhol; %calculate Q assumed 
   specificsolver1 = @(x) solver1(Vpr,R,thetacon,x);
   betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
   Xbetab = R*betab; %assumed the length of the arc corresponding to betab 
-  hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(betab))^2));
-  alpha = acos(R/((R+hj)*sin(betab)));
+  hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(betab))^2))^(1/3)
+  alpha = acos(R/((R+hj)*sin(betab)))
   if ((R+hj)*sin(betab) >= R)
     Sl = (4*tan(alpha)-pi)*R^2 + (pi - 4*alpha*(sin(betab))^2)*(R+hj)^2;
   else
@@ -42,21 +42,22 @@ for i=1:N
   end
   Uavg = 4*(R^2)*L/(rhol*Sl*sin(betab));
   Ub = (8/5)*Uavg;
- 
   thetaspan = [betab pi-betab];
   delta = 4.64*(mu*Xbetab/(rhol*Ub))^(1/2);
   Sc = mu/(rhol*Diff);
-  deltad = delta/Sc^(1/3);
-  [theta, deltad] = ode45(@solver2, thetaspan, deltad);
+  deltadi = delta/Sc^(1/3)
+  solver2(betab,deltadi)
+  [theta, deltad] = ode15s(@solver2, thetaspan, deltadi);
   %solve trapz using eqn 24
-  Di = 2*Rri;
-  Re = (L*dp)/mu;
-  Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
-  Ka = (mu^4)*g/((sigma^3)*rhol);
-  f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
-  term = (0.75*f*Diff)*sin(theta)./deltad;
-  klsi(i) = trapz(term,theta);
-  plot(theta,deltad)
+%  Di = 2*Rri;
+%  Re = (L*dp)/mu;
+%  Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
+%  Ka = (mu^4)*g/((sigma^3)*rhol);
+%  f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
+%  term = (0.75*f*Diff)*sin(theta)./deltad;
+%  klsi(i) = trapz(term,theta);
+%  plot(theta,deltad)
+  klsi(i) = 10;
 end
 Vsum = 0;
 kls = 0;
