@@ -1,5 +1,5 @@
 function [ddeltadtheta] = solver2(theta)
-  global mu R rhol Rri L Diff  Q omega;
+  global mu R rhol Rri L Diff  Q omega betab;
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(theta))^2));
   alpha = acos(R/((R+hj)*sin(theta)));
   if ((R+hj)*sin(theta) >= R)
@@ -10,9 +10,9 @@ function [ddeltadtheta] = solver2(theta)
   Uavg = 4*(R^2)*L/(rhol*Sl*sin(theta));
   Sc = mu/(rhol*Diff);
   rho = rhol;
-  Xbetab = 0.00001; %assumed the length of the arc corresponding to betab 
+  Xbetab = R*betab; %assumed the length of the arc corresponding to betab 
   Ub = (8/5)*Uavg;
-  delta = 4.64*(mu*Xbetab/(rhol*Ub))^(1/2);
+  delta = 4.64*(mu*Xbetab/(rhol*Ub))^0.5;
   deltad = delta/(Sc^(1/3));
   f1 = (-4*R*R*L)/(Sl*Sl*rho);
   h = hj;
