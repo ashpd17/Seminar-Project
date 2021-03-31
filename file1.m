@@ -11,7 +11,7 @@ thetacon = 70*pi/180; %Liquid-solid contact angle con (°)
 g = 9.8; %acceleration due to gravity m/s2
 %------------------------Operating parameters----------------------------
 omega = 176; %Rotational speed ? (rad/s) rad/s 
-L = 1.49; %Liquid superficial mass velocity L (kg/(m2·s))
+L = 4.48; %Liquid superficial mass velocity L (kg/(m2·s))
 G = 0.03; %Gas superficial mass velocity G (kg/(m2·s))
 %------------------------Geometrical parameters--------------------------
 R = dp/2; %radius of the catalyst particle, m
@@ -20,7 +20,7 @@ Ro = (79/2)*10^-3; %outer radius of the rotor, m
 H = 18*10^-3; %axial height, m
 %------------------------Model-------------------------------------------
 i = 1;
-N = 1; %assumed 
+N = round((Ro-Ri)/dp); %assumed 
 for i=1:N
   Rri = Ri + (2*i-1)*R;
   V(i) = pi*((Rri + R)^2 - (Rri-R)^2)*H;
@@ -29,10 +29,13 @@ for i=1:N
   esext = 1/(20 + 0.9*Eo);
   Nc = 3.42/epb - 1.18;
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
-  Q = L*(2*pi*Ri*H)/rhol; %calculate Q assumed 
   specificsolver1 = @(x) solver1(Vpr,R,thetacon,x);
   betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
+  r1 = (1 - cos(betab))/cos(betab + thetacon);
+  r2 = -(sin(betab) - (1-cos(betab))*((cos(betab+thetacon))^-1 - tan(betab+thetacon)));
+  A = 4*(r1-r2)*(1-cos(betab))-2*r1*(1-cos(betab))*sqrt(1-((1-cos(betab))/r1)^2) - 2*(r1^2)*asin((1-cos(betab))/r1)-(2*betab-sin(2*betab));
   Xbetab = R*betab; %assumed the length of the arc corresponding to betab 
+  Q = L*(A)/rhol; %calculate Q assumed 
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(betab))^2))^(1/3);
   alpha = acos(R/((R+hj)*sin(betab)));
   if ((R+hj)*sin(betab) >= R)
@@ -53,12 +56,9 @@ for i=1:N
   Ga = (omega^2)*Rri*(dp^3)*(rhol^2)*(mu)^-2;
   Ka = (mu^4)*g/((sigma^3)*rhol);
   f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
-  term = (0.75*f*Diff)*sin(theta)./deltad
-  theta
+  term = (0.75*f*Diff)*sin(theta)./deltad;
   klsi(i) = trapz(term);
-  deltad = deltad;
-  plot(theta,deltad)
-  xlim([0 3])
+  plot(theta,deltad);
 end
 Vsum = 0;
 kls = 0;
