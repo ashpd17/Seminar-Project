@@ -1,8 +1,8 @@
-clc;
-clear;
-global mu R rhol Rri L Diff Q omega betab;
+function [kls] = file1(m,d)
+global mu R rhol Rri L Diff Q omega;
 %---------------------------Physical Parameters--------------------------
-dp = 3.5e-3; %Particle diameter dp (m)
+%dp = 5.5e-3; %Particle diameter dp (m)
+dp = d;
 rhol = 1029; %Liquid density ?l (kg/m3)
 sigma = 7.31e-2; %Liquid surface tension ? (N/m)
 mu = 1.01e-3; %Liquid viscosity ? (Pa·s)
@@ -11,7 +11,7 @@ thetacon = 70*pi/180; %Liquid-solid contact angle con (°)
 g = 9.8; %acceleration due to gravity m/s2
 %------------------------Operating parameters----------------------------
 omega = 176; %Rotational speed ? (rad/s) rad/s 
-L = 4.48; %Liquid superficial mass velocity L (kg/(m2·s))
+L = m %Liquid superficial mass velocity L (kg/(m2·s))
 G = 0.03; %Gas superficial mass velocity G (kg/(m2·s))
 %------------------------Geometrical parameters--------------------------
 R = dp/2; %radius of the catalyst particle, m
@@ -30,10 +30,8 @@ for i=1:N
   Nc = 3.42/epb - 1.18;
   Vpr = pi*(dp^3)*esext/(3*Nc*(1-epb));
   specificsolver1 = @(x) solver1(Vpr,R,thetacon,x);
-  betab = fzero(specificsolver1,[pi/360,pi/2]); %made 1 change
-  r1 = (1 - cos(betab))/cos(betab + thetacon);
-  r2 = -(sin(betab) - (1-cos(betab))*((cos(betab+thetacon))^-1 - tan(betab+thetacon)));
-  A = 4*(r1-r2)*(1-cos(betab))-2*r1*(1-cos(betab))*sqrt(1-((1-cos(betab))/r1)^2) - 2*(r1^2)*asin((1-cos(betab))/r1)-(2*betab-sin(2*betab));
+  betab = fzero(specificsolver1,[pi/360,pi/2]);%made 1 change
+  A = 0.5*(R)^2*(pi-2*betab);
   Xbetab = R*betab; %assumed the length of the arc corresponding to betab 
   Q = L*(A)/rhol; %calculate Q assumed 
   hj = ((3*mu*Q)/(2*pi*R*rhol*(omega^2)*Rri*(sin(betab))^2))^(1/3);
@@ -57,8 +55,7 @@ for i=1:N
   Ka = (mu^4)*g/((sigma^3)*rhol);
   f = 0.408*((dp/Di)^(-0.231))*(Re^(0.072))*((Ga)^0.036)*((Ka)^0.022);
   term = (0.75*f*Diff)*sin(theta)./deltad;
-  klsi(i) = trapz(term);
-  plot(theta,deltad);
+  klsi(i) = trapz(theta,term);
 end
 Vsum = 0;
 kls = 0;
@@ -68,4 +65,5 @@ end
 for i=1:N
   kls = kls + klsi(i)*V(i);
 end
-kls = kls/Vsum
+kls = kls/Vsum;
+end

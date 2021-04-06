@@ -5,7 +5,7 @@ function [ddeltadtheta] = solver2(theta,deltad)
   if ((R+hj)*sin(theta) >= R)
     Sl = (4*tan(alpha)-pi)*R^2 + (pi - 4*alpha*(sin(theta))^2)*(R+hj)^2;
   else
-     Sl = pi*(2*R*hj+hj^2);
+    Sl = pi*(2*R*hj+hj^2);
   end
   Uavg = 4*(R^2)*L/(rhol*Sl*sin(theta));
   f1 = (-4*R*R*L)/(Sl*Sl*rhol);
